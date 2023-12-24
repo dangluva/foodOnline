@@ -4,7 +4,7 @@ from django.db.models import OneToOneField
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
-
+# models are used to define the structure of the database tables and the relationships between them (allow the user interact with the database)
 class UserManager(BaseUserManager):
     # Create a regular user
     def create_user(self, first_name, last_name, username, email, password=None):

@@ -18,6 +18,7 @@
                         <div class="user-holder">
                             <h2 class="text-uppercase">Manage Your Restaurant</h2>
                             <!-- My Restaurants Form Start -->
+                            <br>
                             <form action="{% url 'vprofile' %}" method="POST" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 <div class="form-fields-set">
@@ -124,13 +125,13 @@
                                             </div>
                                             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                                 <div class="field-holder">
-                                                    <label>Latitude *</label>
+                                                    <label>Latitude</label>
                                                     {{profile_form.latitude}}
                                                 </div>
                                             </div>
                                             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                                 <div class="field-holder">
-                                                    <label>Longitude *</label>
+                                                    <label>Longitude</label>
                                                     {{profile_form.longitude}}
                                                 </div>
                                             </div>

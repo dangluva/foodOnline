@@ -2,6 +2,7 @@ from django import forms
 from .models import User, UserProfile
 from .validators import allow_only_images_validator
 
+# forms in Django are a way to handle HTML forms, validate user input, and process form submissions
 class UserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput())
     confirm_password = forms.CharField(widget=forms.PasswordInput())

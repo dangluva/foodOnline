@@ -12,6 +12,7 @@ from django.contrib import messages, auth
 from .utils import detectUser, send_verification_email
 from django.core.exceptions import PermissionDenied
 
+# views.py is a file where you define the logic for handling HTTP requests and producing HTTP responses
 
 # Restrict the vendor from accessing the customer page
 def check_role_vendor(user):

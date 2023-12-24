@@ -6,6 +6,8 @@ from django.utils.http import urlsafe_base64_encode
 from django.core.mail import EmailMessage
 from django.conf import settings
 
+''' utils.py is a file where you put small, reusable functions that don't belong to a specific part of your Django project. It helps keep your code organized, promotes code reuse, and makes common tasks, like generating slugs or calculating averages, easy to use across different parts of your project. '''
+
 
 def detectUser(user):
     if user.role == 1:
@@ -32,6 +34,7 @@ def send_verification_email(request, user, mail_subject, email_template):
     mail = EmailMessage(mail_subject, message, from_email, to=[to_email])
     mail.send()
 
+# sends an email notification using Django
 def send_notification(mail_subject, mail_template, context):
     from_email = settings.DEFAULT_FROM_EMAIL
     message = render_to_string(mail_template, context)
