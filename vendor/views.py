@@ -70,6 +70,7 @@ def fooditems_by_category(request, pk=None):
     }
     return render(request, 'vendor/fooditems_by_category.html', context)
 
+
 @login_required(login_url='login')
 @user_passes_test(check_role_vendor)
 def add_category(request):
@@ -79,8 +80,9 @@ def add_category(request):
             category_name = form.cleaned_data['category_name']
             category = form.save(commit=False)
             category.vendor = get_vendor(request)
-            category.slug = slugify(category_name)
-            form.save()
+            category.save()  # the category id is generated here
+            category.slug = slugify(category_name) + '-' + str(category.id)
+            category.save()
             messages.success(request, 'The category has been successfully added!')
             return redirect('menu_builder')
         else:
@@ -91,6 +93,7 @@ def add_category(request):
         'form': form,
     }
     return render(request, 'vendor/add_category.html', context)
+
 
 @login_required(login_url='login')
 @user_passes_test(check_role_vendor)
@@ -116,6 +119,7 @@ def edit_category(request, pk=None):
     }
     return render(request, 'vendor/edit_category.html', context)
 
+
 @login_required(login_url='login')
 @user_passes_test(check_role_vendor)
 def delete_category(request, pk=None):
@@ -123,6 +127,7 @@ def delete_category(request, pk=None):
     category.delete()
     messages.success(request, 'The category has been successfully deleted!')
     return redirect('menu_builder')
+
 
 @login_required(login_url='login')
 @user_passes_test(check_role_vendor)
@@ -147,6 +152,7 @@ def add_food(request):
         'form': form,
     }
     return render(request, 'vendor/add_food.html', context)
+
 
 @login_required(login_url='login')
 @user_passes_test(check_role_vendor)
