@@ -38,6 +38,7 @@ def vendor_detail(request, vendor_slug):
     # Check the current day's opening hours
     today_date = date.today()
     today = today_date.isoweekday()
+    
     current_opening_hours = OpeningHour.objects.filter(vendor=vendor, day=today)
 
     if request.user.is_authenticated:
