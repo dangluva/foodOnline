@@ -1,10 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db.models import OneToOneField
-from django.db.models.signals import post_save, pre_save
-from django.dispatch import receiver
 from django.contrib.gis.db import models as gismodels
 from django.contrib.gis.geos import Point
+
 
 # models are used to define the structure of the database tables and the relationships between them (allow the user interact with the database)
 class UserManager(BaseUserManager):
@@ -109,7 +108,6 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.email
-
 
     def save(self, *args, **kwargs):
         if self.latitude and self.longitude:

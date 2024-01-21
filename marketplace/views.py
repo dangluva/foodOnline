@@ -8,10 +8,12 @@ from django.db.models import Prefetch, Q
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 
+from accounts.models import UserProfile
 from .context_processors import get_cart_counter, get_cart_amounts
 from .models import Cart
 from menu.models import Category, FoodItem
 from vendor.models import Vendor, OpeningHour
+from orders.forms import OrderForm
 
 
 def martketplace(request):
@@ -38,7 +40,7 @@ def vendor_detail(request, vendor_slug):
     # Check the current day's opening hours
     today_date = date.today()
     today = today_date.isoweekday()
-    
+
     current_opening_hours = OpeningHour.objects.filter(vendor=vendor, day=today)
 
     if request.user.is_authenticated:
@@ -172,3 +174,28 @@ def search(request):
         }
 
         return render(request, 'marketplace/listings.html', context)
+
+
+@login_required(login_url='login')
+def checkout(request):
+    cart_items = Cart.objects.filter(user=request.user).order_by('created_at')
+    cart_count = cart_items.count()
+    if cart_count <= 0:
+        return redirect('marketplace')
+
+    user_profile = UserProfile.objects.get(user=request.user)
+    default_values = {
+        'first_name': request.user.first_name,
+        'last_name': request.user.last_name,
+        'phone': request.user.phone_number,
+        'email': request.user.email,
+        'address': user_profile.address,
+        'country': user_profile.country,
+        'city': user_profile.city,
+    }
+    form = OrderForm(initial=default_values)
+    context = {
+        'form': form,
+        'cart_items': cart_items,
+    }
+    return render(request, 'marketplace/checkout.html', context)

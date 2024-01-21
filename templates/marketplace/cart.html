@@ -34,7 +34,8 @@
                                                     alt="" width="100" height="100"></div>
                                             <div class="text-holder">
                                                 <h6>{{ item.fooditem }}</h6>
-                                                <a href="{% url 'vendor_detail' item.fooditem.vendor.vendor_slug %}" class="badge badge-warning">{{ item.fooditem.vendor }}</a>
+                                                <a href="{% url 'vendor_detail' item.fooditem.vendor.vendor_slug %}"
+                                                   class="badge badge-warning">{{ item.fooditem.vendor }}</a>
                                                 <br>
                                                 <span>{{ item.fooditem.description }}</span>
                                             </div>
@@ -62,9 +63,8 @@
                                         </div>
                                         {% endif %}
                                     </ul>
-
-
                                 </div>
+
                                 {% for item in cart_items %}
 
                                 <span id="qty-{{ item.fooditem.id }}" class="item_qty d-none"
@@ -99,15 +99,15 @@
                                         </li>
 
                                         {% for key, value in tax_dict.items %}
-                                            {% for i, j in value.items %}
-                                                <li style="list-style-type: none;">
-                                                    {{ key }} <small>({{ i }}%)</small>
-                                                    <span class="price float-right">
+                                        {% for i, j in value.items %}
+                                        <li style="list-style-type: none;">
+                                            {{ key }} <small>({{ i }}%)</small>
+                                            <span class="price float-right">
                                                         <span class="currency">€</span>
                                                         <span id="tax-{{ key }}">{{ j }}</span>
                                                     </span>
-                                                </li>
-                                            {% endfor %}
+                                        </li>
+                                        {% endfor %}
                                         {% endfor %}
 
                                         <li style="list-style-type: none; font-weight: 600;">
@@ -117,6 +117,8 @@
                                                 <span id="total">{{ grand_total }}</span>
                                             </span>
                                         </li>
+
+                                        <a href="{% url 'checkout' %}" class="btn btn-danger w-100 p-2 mt-3">CHECKOUT</a>
                                     </ul>
                                 </div>
 
