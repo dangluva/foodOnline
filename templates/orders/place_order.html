@@ -19,22 +19,19 @@
                         </ul>
                         <div class="tab-content">
                             <div id="home" class="tab-pane in active">
-                                <div class="menu-itam-holder">
+                                <div class="menu-item-holder">
                                     <div id="menu-item-list-6272" class="menu-itam-list">
 
                                         <div class="billing-address">
-                                            <div><b>{{ order.name }}</b></div>
-                                            <div>{{ order.address }}</div>
-                                            <div>{{ order.pin_code }}</div>
-                                            <div>{{ order.city }}</div>
-                                            <div>{{ order.country }}</div>
-                                            <div><b>Phone: </b>{{ order.phone }}</div>
-                                            <div><b>Email: </b>{{ order.email }}</div>
-                                            <div><b>Payment: </b>{{ order.payment_method }}</div>
+                                            <div><b>Name:</b> {{ order.name }}</div>
+                                            <div><b>Order Address:</b> {{ order.address }}</div>
+                                            <div><b>Postal Code:</b> {{ order.pin_code }}</div>
+                                            <div><b>Phone Number:</b> {{ order.phone }}</div>
+                                            <div><b>Email:</b> {{ order.email }}</div>
+                                            <div><b>Payment:</b> {{ order.payment_method }}</div>
                                             <br>
                                             <div>
-                                                <a href="{% url 'checkout' %}"
-                                                   class="btn btn-outline-danger">Edit</a>
+                                                <a href="{% url 'checkout' %}" class="btn btn-outline-danger">Edit</a>
                                             </div>
                                             <br>
                                         </div>
@@ -59,7 +56,9 @@
                         <div class="tab-content">
                             <div id="home" class="tab-pane in active">
                                 <div class="menu-item-holder">
+
                                     <div>
+
                                         <table class="table">
                                             <tbody>
                                             {% for item in cart_items %}
@@ -73,6 +72,8 @@
                                             {% endfor %}
                                             </tbody>
                                         </table>
+
+
                                         <ul>
                                             <li style="list-style-type: none;">
                                                 Subtotal
@@ -139,6 +140,7 @@
     var url = "{% url 'payments' %}";
     var order_number = "{{ order.order_number }}";
     const csrftoken = getCookie('csrftoken');
+    var order_complete = "{% url 'order_complete' %}";
 
     // Render the PayPal button into #paypal-button-container
     paypal.Buttons({
@@ -151,21 +153,34 @@
                 }],
             });
         },
-        onApprove: function (data, actions) {
-            return actions.order.capture().then(function (orderData) {
-                console.log("Order Data:", orderData);
 
-                var transaction_id = orderData.purchase_units[0].payments.captures[0].id;
+    // Finalize the transaction
+    onApprove: function (data, actions) {
+        return actions.order.capture().then(function(orderData) {
+            console.log("Order Data:", orderData);
+            var transaction = orderData.purchase_units[0].payments.captures[0];
 
-                console.log("Transaction completed by " + orderData.payer.name.given_name);
+            var order_id = orderData.id;
+            var transaction_id = transaction.id;
+            var status = orderData.status;
+            var payment_method = 'Paypal';
+            sendTransaction(transaction_id, payment_method, status);
 
-                sendTransaction(transaction_id, 'Paypal', orderData.status);
-            }).catch(function (error) {
-                console.error("Error during PayPal order capture:", error);
-            });
-        }
+            console.log("Transaction completed by " + orderData.payer.name.given_name + " " + orderData.payer.name.surname);
+            console.log("Transaction ID: " + transaction_id);
+            console.log("Order id: " + order_id);
+
+            // Show a success message within the page
+            const element = document.getElementById('paypal-button-container');
+            element.innerHTML = '';
+            element.innerHTML = '<h4 class="text-center"><i class="fa fa-spinner fa-spin"></i>Please wait...</h4>';
+        });
+    }
+
+
     }).render('#paypal-button-container');
 
+    // Send the data to payments view to store in the database
     function sendTransaction(transaction_id, payment_method, status) {
         $.ajax({
             type: 'POST',
@@ -175,11 +190,12 @@
                 'transaction_id': transaction_id,
                 'payment_method': payment_method,
                 'status': status,
-                'csrfmiddlewaretoken': csrftoken,
+                'csrfmiddlewaretoken': csrftoken
             },
-            success: function (response) {
-                console.log("Response==>", response);
-            },
+            success: function(response) {
+                console.log('response==>', response);
+                window.location.href = order_complete + '?order_no=' + response.order_number + '&trans_id=' + response.transaction_id;
+            }
         });
     }
 </script>
