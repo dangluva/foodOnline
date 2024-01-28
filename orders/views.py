@@ -1,19 +1,18 @@
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
-from marketplace.models import Cart, Tax
+from marketplace.models import Cart
 from marketplace.context_processors import get_cart_amounts
 from .forms import OrderForm
 from .models import Order, OrderedFood, Payment
 import simplejson as json
-from .utils import generate_order_number, order_total_by_vendor
+from .utils import generate_order_number
 from accounts.utils import send_notification
 from django.contrib.auth.decorators import login_required
 
 
 @login_required(login_url='login')
 def place_order(request):
-    print('After place order')
     cart_items = Cart.objects.filter(user=request.user).order_by('created_at')
     cart_count = cart_items.count()
     if cart_count <= 0:
@@ -25,10 +24,8 @@ def place_order(request):
     tax_data = get_cart_amounts(request)['tax_dict']
 
     if request.method == 'POST':
-        print('After POST method')
         form = OrderForm(request.POST)
         if form.is_valid():
-            print('After form is valid')
             order = Order()
             order.first_name = form.cleaned_data['first_name']
             order.last_name = form.cleaned_data['last_name']
@@ -41,13 +38,13 @@ def place_order(request):
             order.user = request.user
             order.total = grand_total
             order.tax_data = json.dumps(tax_data)
-            order.total_data = json.dumps(total_data)
+            # order.total_data = json.dumps(total_data)
             order.total_tax = total_tax
             order.payment_method = request.POST['payment_method']
             order.save()  # order id/pk is generated
             order.order_number = generate_order_number(order.id)
             order.save()
-            print(order)
+            print("Order number: " + str(order))
             context = {
                 'order': order,
                 'cart_items': cart_items,
@@ -77,10 +74,12 @@ def payments(request):
         )
         payment.save()
 
+        # UPDATE THE ORDER MODEL
         order.payment = payment
         order.is_ordered = True
         order.save()
 
+        # MOVE THE CART ITEMS TO ORDERED FOOD MODEL
         cart_items = Cart.objects.filter(user=request.user)
         for item in cart_items:
             ordered_food = OrderedFood()
@@ -124,9 +123,9 @@ def payments(request):
                 context = {
                     'order': order,
                     'to_email': i.fooditem.vendor.user.email,
-                    'ordered_food_to_vendor': ordered_food_to_vendor,
-                    'tax_data': order_total_by_vendor(order, i.fooditem.vendor.id)['tax_dict'],
-                    'vendor_grand_total': order_total_by_vendor(order, i.fooditem.vendor.id)['grand_total'],
+                    # 'ordered_food_to_vendor': ordered_food_to_vendor,
+                    # 'tax_data': order_total_by_vendor(order, i.fooditem.vendor.id)['tax_dict'],
+                    # 'vendor_grand_total': order_total_by_vendor(order, i.fooditem.vendor.id)['grand_total'],
                 }
                 send_notification(mail_subject, mail_template, context)
 
@@ -141,6 +140,7 @@ def payments(request):
 def order_complete(request):
     order_number = request.GET.get('order_no')
     transaction_id = request.GET.get('trans_id')
+    print(f'Received order_number: {order_number}, transaction_id: {transaction_id}')
 
     try:
         order = Order.objects.get(order_number=order_number, payment__transaction_id=transaction_id, is_ordered=True)

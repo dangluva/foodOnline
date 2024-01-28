@@ -59,13 +59,21 @@
 
                                     <div>
 
-                                        <table class="table">
+                                        <table class="table" style="margin-top: 10px; margin-bottom: 10px; font-size: 14px;">
+                                            <thead>
+                                            <tr>
+                                                <th>Image</th>
+                                                <th>Food Item</th>
+                                                <th>Quantity</th>
+                                                <th>Price</th>
+                                            </tr>
+                                            </thead>
                                             <tbody>
                                             {% for item in cart_items %}
-                                            <tr>
-                                                <td><img src="{{ item.fooditem.image.url }}" width="40"
+                                            <tr style="padding-top: 10px; padding-bottom: 10px;">
+                                                <td><img src="{{ item.fooditem.image.url }}" width="60"
                                                          alt="Food Image"></td>
-                                                <td><b>{{ item.fooditem }}</b></td>
+                                                <td style="line-height: 1.2;"><b>{{ item.fooditem }}</b></td>
                                                 <td>{{ item.quantity }}</td>
                                                 <td>€{{ item.fooditem.price }}</td>
                                             </tr>
@@ -160,15 +168,16 @@
             console.log("Order Data:", orderData);
             var transaction = orderData.purchase_units[0].payments.captures[0];
 
-            var order_id = orderData.id;
             var transaction_id = transaction.id;
             var status = orderData.status;
             var payment_method = 'Paypal';
-            sendTransaction(transaction_id, payment_method, status);
+
+            // Pass order_number as an argument to sendTransaction
+            sendTransaction(order_number, transaction_id, payment_method, status);
 
             console.log("Transaction completed by " + orderData.payer.name.given_name + " " + orderData.payer.name.surname);
             console.log("Transaction ID: " + transaction_id);
-            console.log("Order id: " + order_id);
+            console.log("Order Number is: " + order_number);
 
             // Show a success message within the page
             const element = document.getElementById('paypal-button-container');
@@ -177,11 +186,12 @@
         });
     }
 
-
     }).render('#paypal-button-container');
 
     // Send the data to payments view to store in the database
-    function sendTransaction(transaction_id, payment_method, status) {
+    function sendTransaction(order_number, transaction_id, payment_method, status) {
+            console.log("Order number after approval: " + order_number);
+            console.log("Transaction ID after approval: " + transaction_id);
         $.ajax({
             type: 'POST',
             url: url,
@@ -193,11 +203,12 @@
                 'csrfmiddlewaretoken': csrftoken
             },
             success: function(response) {
-                console.log('response==>', response);
+                console.log("response ==> ", response);
                 window.location.href = order_complete + '?order_no=' + response.order_number + '&trans_id=' + response.transaction_id;
-            }
+            },
         });
     }
+
 </script>
 
 {% endblock %}

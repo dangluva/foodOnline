@@ -11,7 +11,7 @@
                     <div class="col-md-6">
                         <h4 class="mt-2 mb-3">Thank you for your order.</h4>
                     </div>
-                    <div class="col-md-6 text-right">
+                    <div class="col-md-6 text-right mt-5">
                         <p class="mb-0">{{ order.name }}</p>
                         <p class="mb-0">{{ order.address }}</p>
                         <p class="mb-0">{{ order.phone }}</p>
@@ -19,7 +19,7 @@
                     </div>
                 </div>
 
-                <h6>Hello {{ order.name }}, </h6><span>Review your order details below.</span>
+                <h6 class="mt-2">Hello {{ order.name }}, </h6><span>Review your order details below.</span>
                 <hr>
 
                 <div class="d-flex justify-content-between">
@@ -45,11 +45,11 @@
                     <tr>
                         <td><img src="{{ item.fooditem.image.url }}" width="60" alt="Food Image"></td>
                         <td>
-                            <p class="mb-0"><b>{{ item.fooditem }}</b></p>
-                            <a class="text-muted" href="{% url 'vendor_detail' item.fooditem.vendor.vendor_slug %}">{{
-                                item.fooditem.vendor.vendor_name }}</a>
+                            <p class="mb-1"><b>{{ item.fooditem }}</b></p>
+                            <a class="bg-warning text-dark"
+                               href="{% url 'vendor_detail' item.fooditem.vendor.vendor_slug %}">{{ item.fooditem.vendor.vendor_name }}</a>
                         </td>
-                        <td>QTY: {{ item.quantity }}</td>
+                        <td>Quantity: {{ item.quantity }}</td>
                         <td>€{{ item.fooditem.price }}</td>
                     </tr>
                     {% endfor %}
@@ -65,8 +65,8 @@
                             <li style="list-style-type: none;">
                                 Subtotal
                                 <span class="price float-right">
-                                    <span class="currency">$</span>
-                                    <span id="subtotal">{{ subtotal }}</span>
+                                    <span class="currency">€</span>
+                                    <span id="subtotal">{{ subtotal|floatformat:2 }}</span>
                                 </span>
                             </li>
 
@@ -76,7 +76,7 @@
                                 {{ key }} <small>({{ i }}%)</small>
                                 <span class="price float-right">
                                             <span class="currency">€</span>
-                                            <span id="tax-{{ key }}">{{ j }}</span>
+                                            <span id="tax-{{ key }}">{{ j|floatformat:2 }}</span>
                                         </span>
                             </li>
                             {% endfor %}
@@ -87,7 +87,7 @@
                                 TOTAL
                                 <span class="price float-right">
                                     <span class="currency">€</span>
-                                    <span id="total">{{ order.total }}</span>
+                                    <span id="total">{{ order.total|floatformat:2 }}</span>
                                 </span>
                             </li>
                         </ul>
@@ -99,9 +99,9 @@
                         <span class="d-block font-weight-bold">Thanks for ordering with us.</span>
                         <span>FoodOnline Team</span>
                     </div>
-                    <div class="d-flex justify-content-end align-items-end">
-                        <span class="d-block font-weight-bold">Need help?</span>
-                        <span>Call +370 671 78 956</span>
+                    <div>
+                        <div class="font-weight-bold">Need help?</div>
+                        <div>Call +370 671 78 956</div>
                     </div>
                 </div>
             </div>
