@@ -47,7 +47,7 @@
                         <td>
                             <p class="mb-1"><b>{{ item.fooditem }}</b></p>
                             <a class="bg-warning text-dark"
-                               href="{% url 'vendor_detail' item.fooditem.vendor.vendor_slug %}">{{ item.fooditem.vendor.vendor_name }}</a>
+                               href="{% url 'vendor_detail' item.fooditem.vendor.vendor_slug %}">{{item.fooditem.vendor.vendor_name}}</a>
                         </td>
                         <td>Quantity: {{ item.quantity }}</td>
                         <td>€{{ item.fooditem.price }}</td>

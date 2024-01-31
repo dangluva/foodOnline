@@ -44,7 +44,6 @@ def place_order(request):
             order.save()  # order id/pk is generated
             order.order_number = generate_order_number(order.id)
             order.save()
-            print("Order number: " + str(order))
             context = {
                 'order': order,
                 'cart_items': cart_items,
@@ -53,7 +52,6 @@ def place_order(request):
         else:
             print('Form errors:')
             print(form.errors)
-    print('End')
     return render(request, 'orders/place_order.html')
 
 @login_required(login_url='login')
@@ -140,7 +138,6 @@ def payments(request):
 def order_complete(request):
     order_number = request.GET.get('order_no')
     transaction_id = request.GET.get('trans_id')
-    print(f'Received order_number: {order_number}, transaction_id: {transaction_id}')
 
     try:
         order = Order.objects.get(order_number=order_number, payment__transaction_id=transaction_id, is_ordered=True)
@@ -151,7 +148,6 @@ def order_complete(request):
             subtotal += (item.price * item.quantity)
 
         tax_data = json.loads(order.tax_data)
-        print(tax_data)
         context = {
             'order': order,
             'ordered_food': ordered_food,

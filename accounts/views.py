@@ -5,12 +5,14 @@ from django.shortcuts import render, redirect
 from django.utils.http import urlsafe_base64_decode
 from django.template.defaultfilters import slugify
 
+from orders.models import Order
 from vendor.forms import VendorForm
 from .forms import UserForm
 from .models import User, UserProfile
 from django.contrib import messages, auth
 from .utils import detectUser, send_verification_email
 from django.core.exceptions import PermissionDenied
+
 
 # views.py is a file where you define the logic for handling HTTP requests and producing HTTP responses
 
@@ -138,6 +140,7 @@ def activate(request, uidb64, token):
         messages.error(request, 'Invalid activatin link')
         return redirect('myAccount')
 
+
 def login(request):
     if request.user.is_authenticated:
         messages.warning(request, 'You are already logged in.')
@@ -174,13 +177,21 @@ def myAccount(request):
 @login_required(login_url='login')
 @user_passes_test(check_role_customer)
 def customerDashboard(request):
-    return render(request, 'accounts/customerDashboard.html')
+    orders = Order.objects.filter(user=request.user, is_ordered=True)
+    recent_orders = orders[:5]
+    context = {
+        'orders': orders,
+        'orders_count': orders.count(),
+        'recent_orders': recent_orders,
+    }
+    return render(request, 'accounts/customerDashboard.html', context)
 
 
 @login_required(login_url='login')
 @user_passes_test(check_role_vendor)
 def vendorDashboard(request):
     return render(request, 'accounts/vendorDashboard.html')
+
 
 def forgot_password(request):
     if request.method == 'POST':
@@ -201,6 +212,7 @@ def forgot_password(request):
             return redirect('forgot_password')
     return render(request, 'accounts/forgot_password.html')
 
+
 def reset_password_validate(request, uidb64, token):
     # validate the user by decoding the token and user pk
     try:
@@ -216,6 +228,7 @@ def reset_password_validate(request, uidb64, token):
     else:
         messages.error(request, 'The link you followed has expired!')
         return redirect('myAccount')
+
 
 def reset_password(request):
     if request.method == 'POST':
