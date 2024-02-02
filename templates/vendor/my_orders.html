@@ -1,17 +1,18 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block content %}
 {% include 'includes/alerts.html' %}
 
 <!-- Main Section Start -->
 <div class="main-section">
-    {% include 'customers/cover.html' %}
+    {% include 'includes/cover.html' %}
     <div class="page-section account-header buyer-logged-in">
         <div class="container">
             <div class="row">
                 <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                     <!-- Load the sidebar here -->
-                    {% include 'includes/customer_sidebar.html' %}
+                    {% include 'includes/vendor_sidebar.html' %}
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
                     <div class="user-dashboard loader-holder">
@@ -37,19 +38,16 @@
                                                 {% for order in orders %}
                                                 <tr>
                                                     <td>
-                                                        <a href="{% url 'order_details' order.order_number %}"
-                                                           class="text-blue"
-                                                           style="color: inherit; text-decoration: none;"
-                                                           onmouseover="this.style.color='blue'"
-                                                           onmouseout="this.style.color='inherit'">
+                                                        <a href="{% url 'vendor_order_details' order.order_number %}"
+                                                           class="text-blue">
                                                             <code style="font-size: 16px;">{{ order.order_number }}</code>
                                                         </a>
                                                     </td>
                                                     <td>{{ order.name }}</td>
-                                                    <td>€{{ order.total|floatformat:2 }}</td>
+                                                    <td>€{{ order.get_total_by_vendor.grand_total | floatformat:2 }}</td>
                                                     <td>{{ order.status }}</td>
                                                     <td>{{ order.created_at }}</td>
-                                                    <td><a href="{% url 'order_details' order.order_number %}"
+                                                    <td><a href="{% url 'vendor_order_details' order.order_number %}"
                                                            class="btn btn-danger">Details</a></td>
                                                 </tr>
                                                 {% endfor %}

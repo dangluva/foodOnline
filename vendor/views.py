@@ -10,6 +10,7 @@ from accounts.models import UserProfile
 from accounts.views import check_role_vendor
 from menu.forms import CategoryForm, FoodItemForm
 from menu.models import Category, FoodItem
+from orders.models import Order, OrderedFood
 from .forms import VendorForm, OpeningHourForm
 from .models import Vendor, OpeningHour
 
@@ -198,7 +199,7 @@ def opening_hours(request):
         'form': form,
         'opening_hours': opening_hours,
     }
-    return render(request,'vendor/opening_hours.html', context)
+    return render(request, 'vendor/opening_hours.html', context)
 
 
 def add_opening_hours(request):
@@ -211,13 +212,16 @@ def add_opening_hours(request):
             is_closed = request.POST.get('is_closed')
 
             try:
-                hour = OpeningHour.objects.create(vendor=get_vendor(request), day=day, from_hour=from_hour, to_hour=to_hour, is_closed=is_closed)
+                hour = OpeningHour.objects.create(vendor=get_vendor(request), day=day, from_hour=from_hour,
+                                                  to_hour=to_hour, is_closed=is_closed)
                 if hour:
                     day = OpeningHour.objects.get(id=hour.id)
                     if day.is_closed:
-                        response = {'status': 'success', 'id': hour.id, 'day': day.get_day_display(), 'is_closed': 'Closed'}
+                        response = {'status': 'success', 'id': hour.id, 'day': day.get_day_display(),
+                                    'is_closed': 'Closed'}
                     else:
-                        response = {'status': 'success', 'id': hour.id, 'day': day.get_day_display(), 'from_hour': hour.from_hour, 'to_hour': to_hour}
+                        response = {'status': 'success', 'id': hour.id, 'day': day.get_day_display(),
+                                    'from_hour': hour.from_hour, 'to_hour': to_hour}
                 return JsonResponse(response)
             except IntegrityError as e:
                 response = {'status': 'failed', 'message': from_hour + '-' + to_hour + ' already exists for this day!'}
@@ -234,3 +238,27 @@ def remove_opening_hours(request, pk=None):
             hour.delete()
             return JsonResponse({'status': 'success', 'id': pk})
 
+
+def order_details(request, order_number):
+    try:
+        order = Order.objects.get(order_number=order_number, is_ordered=True)
+        ordered_food = OrderedFood.objects.filter(order=order, fooditem__vendor=get_vendor(request))
+        context = {
+            'order': order,
+            'ordered_food': ordered_food,
+            'subtotal': order.get_total_by_vendor()['subtotal'],
+            'tax_data': order.get_total_by_vendor()['tax_dict'],
+            'grand_total': order.get_total_by_vendor()['grand_total'],
+        }
+    except:
+        return redirect('vendor')
+    return render(request, 'vendor/order_details.html', context)
+
+
+def my_orders(request):
+    vendor = Vendor.objects.get(user=request.user)
+    orders = Order.objects.filter(vendors__in=[vendor.id], is_ordered=True).order_by('-created_at')
+    context = {
+        'orders': orders,
+    }
+    return render(request, 'vendor/my_orders.html', context)

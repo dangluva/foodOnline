@@ -3,7 +3,7 @@ import simplejson as json
 
 
 def generate_order_number(pk):
-    current_datetime = datetime.datetime.now().strftime('%Y%m%d%H%M_')  # 202401272240_ + pk
+    current_datetime = datetime.datetime.now().strftime('%Y%m%d%H%M')  # 202401272240 + pk
     order_number = current_datetime + str(pk)
     return order_number
 
