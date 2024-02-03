@@ -40,10 +40,11 @@
                                                         <a href="{% url 'order_details' order.order_number %}"
                                                            class="text-blue"
                                                            style="color: inherit; text-decoration: none;"
-                                                           onmouseover="this.style.color='blue'"
-                                                           onmouseout="this.style.color='inherit'">
+                                                           onmouseover="this.style.color='fuchsia'; this.style.textDecoration='underline';"
+                                                           onmouseout="this.style.color='inherit'; this.style.textDecoration='none';">
                                                             <code style="font-size: 16px;">{{ order.order_number }}</code>
                                                         </a>
+
                                                     </td>
                                                     <td>{{ order.name }}</td>
                                                     <td>€{{ order.total|floatformat:2 }}</td>

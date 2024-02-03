@@ -59,18 +59,19 @@
 
                                     <div>
 
-                                        <table class="table" style="margin-top: 10px; margin-bottom: 10px; font-size: 14px;">
+                                        <table class="table"
+                                               style="margin-top: 10px; margin-bottom: 10px; font-size: 14px; border: dotted;">
                                             <thead>
                                             <tr>
-                                                <th>Image</th>
-                                                <th>Food Item</th>
-                                                <th>Quantity</th>
-                                                <th>Price</th>
+                                                <th style="border-bottom: 1px dotted;">Image</th>
+                                                <th style="border-bottom: 1px dotted;">Food Item</th>
+                                                <th style="border-bottom: 1px dotted;">Quantity</th>
+                                                <th style="border-bottom: 1px dotted;">Price</th>
                                             </tr>
                                             </thead>
                                             <tbody>
                                             {% for item in cart_items %}
-                                            <tr style="padding-top: 10px; padding-bottom: 10px;">
+                                            <tr style="padding-top: 10px; padding-bottom: 10px; border-bottom: 3px double;">
                                                 <td><img src="{{ item.fooditem.image.url }}" width="60"
                                                          alt="Food Image"></td>
                                                 <td style="line-height: 1.2;"><b>{{ item.fooditem }}</b></td>
@@ -79,6 +80,7 @@
                                             </tr>
                                             {% endfor %}
                                             </tbody>
+
                                         </table>
 
 
@@ -92,7 +94,7 @@
                                             </li>
 
                                             {% for key, value in tax_dict.items %}
-                                            {% for i, j in value.items %}
+                                                {% for i, j in value.items %}
                                             <li style="list-style-type: none;">
                                                 {{ key }} <small>({{ i }}%)</small>
                                                 <span class="price float-right">
@@ -100,7 +102,7 @@
                                                                 <span id="tax-{{ key }}">{{ j }}</span>
                                                             </span>
                                             </li>
-                                            {% endfor %}
+                                                {% endfor %}
                                             {% endfor %}
 
                                             <li style="list-style-type: none; font-weight: 600;">

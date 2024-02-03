@@ -181,7 +181,7 @@ def myAccount(request):
 @user_passes_test(check_role_customer)
 def customerDashboard(request):
     orders = Order.objects.filter(user=request.user, is_ordered=True)
-    recent_orders = orders[:5]
+    recent_orders = orders[:10]
     context = {
         'orders': orders,
         'orders_count': orders.count(),
